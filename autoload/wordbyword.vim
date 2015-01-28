@@ -62,7 +62,18 @@ function! s:UpdateWord()
 	endif
 
   " pegar el contenido de sdcv en el buffer
-  let expl=system('sdcv -n ' . cursor_word)
+  let l:dict_path=''
+  let l:bookname=''
+  " verifico si esta definido un path
+  if exists("g:wbw_stardict_dictionary_path")
+    let l:dict_path='--data-dir=' . g:wbw_stardict_dictionary_path . ' '
+  endif
+  " poner el bookname
+  if exists("g:wbw_stardict_bookname")
+    let l:bookname='--use-dict=' . get(g:wbw_stardict_booknames, g:wbw_stardict_bookname - 1) . ' '
+  endif
+  " Ejecutar sdcv
+  let expl=system('sdcv -n ' . l:dict_path . l:bookname . cursor_word)
 
 	execute outputnr 'wincmd w'
 
@@ -174,7 +185,18 @@ endfunction
 
 " Contenido del balloon
 function! wordbyword#balloon()
-  let s:expl=system('sdcv -n ' .
+  let l:dict_path=''
+  let l:bookname=''
+  " verifico si esta definido un path
+  if exists("g:wbw_stardict_dictionary_path")
+    let l:dict_path='--data-dir=' . g:wbw_stardict_dictionary_path . ' '
+  endif
+  " poner el bookname
+  if exists("g:wbw_stardict_bookname")
+    let l:bookname='--use-dict=' . get(g:wbw_stardict_booknames, g:wbw_stardict_bookname - 1) . ' '
+  endif
+  " Ejecutar sdcv
+  let s:expl=system('sdcv -n ' . l:dict_path . l:bookname . 
           \ v:beval_text .
           \ '|fmt -cstw 40')
   return s:expl
