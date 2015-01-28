@@ -91,7 +91,7 @@ function! s:UpdateWord()
 endfunction
 
 " Muestra el resultado de la busqueda
-function! wordbyword#open(engine)
+function! wordbyword#open()
 	let bname = 'wordbyword' 
 	let cur_winnr = winnr()
 
@@ -141,30 +141,27 @@ endfunction
 
 " Cierra el resultado de busqueda
 function! wordbyword#close()
-	let engine_name = len(a:name)==0 ? s:get_recent_engine(): a:name
-	let context = s:get_external_engine(engine_name)
-	let bname = '^'. get(context, 'bufname', 'CursorOverDictionary') .'$'
+	let bname = '^wordbyword$'
 	silent! execute 'bwipeout!' bufnr(bname)
 endfunction
 
 " Toggle el ventana
 function! wordbyword#toggle()
-	let engine_name = len(a:name)==0 ? s:get_recent_engine(): a:name
 	let win_nr = winnr('$')
-	call cursoroverdictionary#open(1, engine_name)
+	call cursoroverdictionary#open()
 	if win_nr == winnr('$')
-		call cursoroverdictionary#close(engine_name)
+		call cursoroverdictionary#close()
 	endif
 endfunction
 
 " Busca la palabra y la muestra en la buffer wbw
 function! wordbyword#selected_ex()
-
+  " TODO
 endfunction
 
 " Busca la palabra selecciona en visual mode y la muesta en el buffer
-function! wordbyword#search_keyword_ex()
-
+function! wordbyword#search_keyword_ex(word)
+  " TODO
 endfunction
 
 " Busca la ventana de salida
@@ -173,5 +170,13 @@ function! s:get_output_winnr(bname)
 		return -1
 	endif
 	return bufwinnr(bufnr('^'. a:bname .'$'))
+endfunction
+
+" Contenido del balloon
+function! wordbyword#balloon()
+  let s:expl=system('sdcv -n ' .
+          \ v:beval_text .
+          \ '|fmt -cstw 40')
+  return s:expl
 endfunction
 
