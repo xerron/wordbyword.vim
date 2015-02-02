@@ -1,5 +1,5 @@
 " wordbyword.vim - word by word interface call funcion
-" Version: 0.1
+" Version: 2.0
 " Maintainer: E. Manuel Cerrón Angeles <xerron.angels@gmail.com>
 " Date: 2015-01-18
 " Licence: MIT
@@ -34,7 +34,11 @@ endfunction
 " Abrir WBW Buffer 
 function! s:wordbyword(bang)
   if a:bang
-    call wordbyword#close()
+    if g:wbw_stardict_bookname == 'g'
+      call wordbyword#goldendict_close()
+    else
+      call wordbyword#close()
+    endif
   else
     let s:dictionaries = s:BooknameList()
     echohl Title 
@@ -45,10 +49,15 @@ function! s:wordbyword(bang)
       echo s:count . ' - ' . i
       let s:count += 1
     endfor
+    echo 'g - Goldendict popup'
     echo 'Selecciona un bookname: (escriba un numero) '
     let s:choice = nr2char(getchar())
     let g:wbw_stardict_bookname = s:choice
-    call wordbyword#open()
+    if g:wbw_stardict_bookname == 'g'
+      call wordbyword#goldendict_open()
+    else
+      call wordbyword#open()
+    endif
   endif
 endfunction
 

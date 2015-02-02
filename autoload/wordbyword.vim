@@ -141,7 +141,7 @@ function! wordbyword#open()
 		autocmd!
 		autocmd CursorMoved * call <SID>UpdateWord()
 		execute "autocmd BufWipeout" bname "call s:delete_augroup()"
-	augroup END
+  augroup END
 
   " Volver a la ventana actual
   execute cur_winnr 'wincmd w'
@@ -154,6 +154,7 @@ endfunction
 function! wordbyword#close()
 	let bname = '^wordbyword$'
 	silent! execute 'bwipeout!' bufnr(bname)
+  call s:delete_augroup()
 endfunction
 
 " Toggle el ventana
@@ -162,6 +163,7 @@ function! wordbyword#toggle()
 	call cursoroverdictionary#open()
 	if win_nr == winnr('$')
 		call cursoroverdictionary#close()
+    call s:delete_augroup()
 	endif
 endfunction
 
@@ -200,5 +202,55 @@ function! wordbyword#balloon()
           \ v:beval_text .
           \ '|fmt -cstw 40')
   return s:expl
+endfunction
+
+" Executar goldendict
+function! wordbyword#goldendict_open()
+	let bname = 'wordbyword' 
+	let cur_winnr = winnr()
+
+  augroup WBWCursorEvent
+		autocmd!
+		autocmd CursorMoved * call <SID>UpdateWordGoldendict()
+		execute "autocmd BufWipeout" bname "call s:delete_augroup()"
+	augroup END
+
+  call s:UpdateWordGoldendict()
+  execute cur_winnr 'wincmd w'
+endfunction
+
+" Cerrar goldendict
+function! wordbyword#goldendict_close()
+  call s:delete_augroup()
+endfunction
+
+" Balloon goldendict
+function! wordbyword#goldendict_balloon()
+
+endfunction
+
+" Borrar el evento del cursor
+function! s:UpdateWordGoldendict()
+	let cur_winnr = winnr()
+  " Traer la palabra actual
+	let cursor_word = expand("<cword>")
+	if len(cursor_word) == 0
+		return
+	endif
+
+	" Ultima palabra comprobación 
+	let last_word = ''
+	if exists("b:last_word")
+		let last_word = b:last_word
+	endif
+	if last_word ==# cursor_word
+		return
+	endif
+  " falta comprobacion si exite goldendict
+  " y falta comprobacion si existe vim-dispatch
+  " execute 'Start! goldendict ' . cursor_word  
+  let vacio = system('goldendict ' . cursor_word )
+
+  execute cur_winnr 'wincmd w'
 endfunction
 
